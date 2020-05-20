@@ -1,25 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Home from "./Home";
+import ArtistDetails from "./ArtistDetails";
+
+import { fetchArtists } from "./api";
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("Muse");
+
+  const [artistResults, setArtistResults] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchArtists(searchTerm).then((data: any) =>
+      setArtistResults(data.artists.items)
+    );
+  }, [searchTerm]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Switch>
+        <Route path={`/`} exact={true}>
+          <Home setSearchTerm={setSearchTerm} artistResults={artistResults} />
+        </Route>
+      </Switch>
+      <Switch>
+        <Route path={`/artists/:artistID`}>
+          <ArtistDetails />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
